@@ -11,9 +11,8 @@ Works with any OpenAI-compatible API.
 
 ## Design
 
-Actions are offered to the LLM as tool choices, so it acts on Discord actively within the loop.
-
-Every action on Discord goes through a tool.
+Available Discord actions are offered to the LLM as tool choices, so it can actively operate on Discord from within the loop.
+Every action it takes on Discord is routed through a tool.
 
 ## Setup
 
