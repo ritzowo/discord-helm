@@ -6,7 +6,8 @@
 LLMがBotとしてDiscordを操作するためのインターフェースで、Discordへの作用をツールとして提供しています。
 OpenAI互換APIに対応。
 
-> This project is in the early stages of development. The interfaces and specifications are subject to change.
+> [!NOTE]
+> このプロジェクトは開発初期段階です。インターフェースや仕様は変更される可能性があります。
 
 ## Design
 
