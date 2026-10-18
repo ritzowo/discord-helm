@@ -1,18 +1,14 @@
-import {
-  ChannelType,
-  Events,
-  type Client,
-  type Message,
-  type SendableChannels,
-} from 'discord.js';
+import { ChannelType, Events, type Client, type Message, type SendableChannels } from 'discord.js';
 import type { EventModule } from './types.js';
 import { insertMessage } from '../db/messages.js';
 import { buildContext } from '../context/context.js';
 import { toChatMessages } from '../context/to-chat-messages.js';
 import { getProvider } from '../llm/index.js';
 import { enqueue } from '../llm/queue.js';
-import { dispatchTool, ackPhaseTools, replyPhaseTools, type ToolContext } from '../llm/tools.js';
+import { ackTools, replyTools } from '../llm/tools/index.js';
 import type { ChatMessage } from '../llm/provider.js';
+import type { ToolContext } from '../llm/tool.js';
+import { sendChunked } from '../discord/messaging.js';
 
 interface MessageInput {
   authorId: string;
@@ -84,7 +80,9 @@ async function generateReply(channel: SendableChannels, threadId: string): Promi
   const persist = (content: string, messageId: string, createdAt: number): void => {
     insertMessage({ threadId, discordId: messageId, role: 'assistant', content, createdAt });
   };
-  const ctx = { channel, onSent: persist };
+  const ctx: ToolContext = {
+    send: (content) => sendChunked(content, channel, persist),
+  };
 
   try {
     await runAckPhase(messages, ctx);
@@ -97,13 +95,13 @@ async function generateReply(channel: SendableChannels, threadId: string): Promi
 }
 
 async function runAckPhase(messages: ChatMessage[], ctx: ToolContext): Promise<void> {
-  const result = await getProvider().chat(messages, ackPhaseTools);
+  const result = await getProvider().chat(messages, ackTools.definitions);
   if (result.toolCalls.length === 0) {
     return;
   }
   messages.push({ role: 'assistant', content: result.content ?? '', toolCalls: result.toolCalls });
   for (const call of result.toolCalls) {
-    const outcome = await dispatchTool(call, ctx);
+    const outcome = await ackTools.dispatch(call, ctx);
     messages.push({ role: 'tool', content: outcome, toolCallId: call.id });
   }
 }
@@ -114,7 +112,7 @@ async function runReplyPhase(
   threadId: string,
 ): Promise<void> {
   for (let round = 0; round < MAX_AGENT_ROUNDS; round++) {
-    const result = await getProvider().chat(messages, replyPhaseTools);
+    const result = await getProvider().chat(messages, replyTools.definitions);
 
     if (result.toolCalls.length === 0) {
       console.warn('[agent] model returned no tool call; sending nothing');
@@ -128,7 +126,7 @@ async function runReplyPhase(
     });
 
     for (const call of result.toolCalls) {
-      const outcome = await dispatchTool(call, ctx);
+      const outcome = await replyTools.dispatch(call, ctx);
       messages.push({ role: 'tool', content: outcome, toolCallId: call.id });
     }
   }
