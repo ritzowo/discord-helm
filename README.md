@@ -1,16 +1,18 @@
-# discord-helm
+# Discord Helm
 
-English | [日本語](./README.ja.md)
+<a href="./README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a>
+<a href="./README.ja.md"><img src="https://img.shields.io/badge/日本語-lightgrey?style=for-the-badge" alt="日本語"></a>
 
 An interface for an LLM to operate Discord as a bot: actions on Discord are exposed to the LLM as tools.
 Works with any OpenAI-compatible API.
 
+> [!NOTE]
 > This project is in the early stages of development. The interfaces and specifications are subject to change.
 
 ## Design
 
-- Actions are offered to the LLM as tool choices, so it acts on Discord actively within the loop.
-- Every action on Discord goes through a tool.
+Available Discord actions are offered to the LLM as tool choices, so it can actively operate on Discord from within the loop.
+Every action it takes on Discord is routed through a tool.
 
 ## Setup
 

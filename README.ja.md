@@ -1,18 +1,20 @@
-# discord-helm
+# Discord Helm
 
-[English](./README.md) | 日本語
+<a href="./README.md"><img src="https://img.shields.io/badge/English-lightgrey?style=for-the-badge" alt="English"></a>
+<a href="./README.ja.md"><img src="https://img.shields.io/badge/日本語-blue?style=for-the-badge" alt="日本語"></a>
 
 LLMがBotとしてDiscordを操作するためのインターフェースで、Discordへの作用をツールとして提供しています。
-OpenAI 互換 API に対応。
+OpenAI互換APIに対応。
 
-> This project is in the early stages of development. The interfaces and specifications are subject to change.
+> [!NOTE]
+> このプロジェクトは開発初期段階です。インターフェースや仕様は変更される可能性があります。
 
-## 設計思想
+## Design
 
-- Toolsとして選択肢を提示することでループの中で能動的にDiscordへの操作をさせる。
-- Discordへの作用はすべてツール経由。
+利用可能なDiscordの操作はツールの選択肢としてLLMに提示され、LLMはループの中から能動的にDiscordを操作できます。
+LLMが行うDiscordへの操作は、すべてツールを経由します。
 
-## セットアップ
+## Setup
 
 ```bash
 git clone https://github.com/ritzowo/discord-helm.git
@@ -22,7 +24,7 @@ cp .env.example .env   # 各値を設定
 npm run dev
 ```
 
-## 環境変数
+## Environment Variables
 
 `.env`（`.env.example` をコピーして作成）に設定します。
 
