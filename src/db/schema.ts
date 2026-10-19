@@ -1,16 +1,16 @@
-import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { bigint, bigserial, index, pgTable, text } from 'drizzle-orm/pg-core';
 
-export const messages = sqliteTable(
+export const messages = pgTable(
   'messages',
   {
-    id: integer('id').primaryKey({ autoIncrement: true }),
+    id: bigserial('id', { mode: 'number' }).primaryKey(),
     threadId: text('thread_id').notNull(),
     discordId: text('discord_id').notNull().unique(),
     role: text('role', { enum: ['user', 'assistant'] }).notNull(),
     authorId: text('author_id'),
     authorName: text('author_name'),
     content: text('content').notNull(),
-    createdAt: integer('created_at').notNull(),
+    createdAt: bigint('created_at', { mode: 'number' }).notNull(),
   },
   (table) => [index('idx_messages_thread').on(table.threadId, table.createdAt)],
 );

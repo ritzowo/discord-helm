@@ -1,6 +1,7 @@
 import { Client, GatewayIntentBits } from 'discord.js';
 import { config } from './config.js';
 import { events } from './events/index.js';
+import { initDb } from './db/index.js';
 
 const client = new Client({
   intents: [
@@ -19,6 +20,7 @@ for (const event of events) {
 }
 
 async function main(): Promise<void> {
+  await initDb();
   await client.login(config.discordToken);
 }
 
