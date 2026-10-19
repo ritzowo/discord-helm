@@ -19,8 +19,11 @@ export interface BuildContextOptions {
   system?: string;
 }
 
-export function buildContext(threadId: string, options: BuildContextOptions = {}): Context {
-  const rows = getThreadMessages(threadId, options.limit);
+export async function buildContext(
+  threadId: string,
+  options: BuildContextOptions = {},
+): Promise<Context> {
+  const rows = await getThreadMessages(threadId, options.limit);
 
   const messages: ContextMessage[] = [];
   for (const row of rows) {

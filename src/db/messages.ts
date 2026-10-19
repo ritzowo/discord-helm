@@ -14,7 +14,7 @@ export interface StoredMessage {
   createdAt: number;
 }
 
-export function insertMessage(message: StoredMessage): void {
+export async function insertMessage(message: StoredMessage): Promise<void> {
   const row: NewMessageRow = {
     threadId: message.threadId,
     discordId: message.discordId,
@@ -25,17 +25,16 @@ export function insertMessage(message: StoredMessage): void {
     createdAt: message.createdAt,
   };
 
-  getDb().insert(messages).values(row).onConflictDoNothing().run();
+  await getDb().insert(messages).values(row).onConflictDoNothing();
 }
 
-export function getThreadMessages(threadId: string, limit = 40): MessageRow[] {
-  const rows = getDb()
+export async function getThreadMessages(threadId: string, limit = 40): Promise<MessageRow[]> {
+  const rows = await getDb()
     .select()
     .from(messages)
     .where(eq(messages.threadId, threadId))
     .orderBy(desc(messages.createdAt), desc(messages.id))
-    .limit(limit)
-    .all();
+    .limit(limit);
 
   return rows.reverse();
 }

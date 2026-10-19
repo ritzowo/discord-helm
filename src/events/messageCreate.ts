@@ -69,7 +69,7 @@ function formatReply(input: MessageInput, repliedTo: MessageInput | undefined): 
 }
 
 async function generateReply(channel: SendableChannels, threadId: string): Promise<void> {
-  const context = buildContext(threadId, { system: SYSTEM_PROMPT });
+  const context = await buildContext(threadId, { system: SYSTEM_PROMPT });
   const messages: ChatMessage[] = toChatMessages(context);
 
   await channel.sendTyping();
@@ -78,7 +78,9 @@ async function generateReply(channel: SendableChannels, threadId: string): Promi
   }, 8000);
 
   const persist = (content: string, messageId: string, createdAt: number): void => {
-    insertMessage({ threadId, discordId: messageId, role: 'assistant', content, createdAt });
+    void insertMessage({ threadId, discordId: messageId, role: 'assistant', content, createdAt }).catch(
+      (err) => console.error('Failed to persist assistant message:', err),
+    );
   };
   const ctx: ToolContext = {
     send: (content) => sendChunked(content, channel, persist),
@@ -144,7 +146,7 @@ async function handleInThread(message: Message, botId: string): Promise<void> {
 
   const text = stripMention(message.content, botId);
 
-  insertMessage({
+  await insertMessage({
     threadId: channel.id,
     discordId: message.id,
     role: 'user',
@@ -170,7 +172,7 @@ async function handleInChannel(message: Message, botId: string): Promise<void> {
   const repliedTo = await resolveRepliedTo(message);
   const thread = await message.startThread({ name: resolveThreadName(input, repliedTo) });
 
-  insertMessage({
+  await insertMessage({
     threadId: thread.id,
     discordId: message.id,
     role: 'user',
