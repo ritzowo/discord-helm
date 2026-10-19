@@ -1,0 +1,9 @@
+services:
+  db:
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+
+  bot:
+    image: discord-helm:dev
+    build: .
+    pull_policy: build
