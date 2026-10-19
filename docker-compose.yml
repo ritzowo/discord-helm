@@ -14,10 +14,11 @@ services:
       retries: 10
 
   bot:
-    build: .
-    env_file: .env
+    image: ${DISCORD_HELM_IMAGE:-ghcr.io/ritzowo/discord-helm}:${DISCORD_HELM_VERSION:-latest}
+    env_file: ${DISCORD_HELM_ENV_FILE:-.env}
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/discord_helm
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
     depends_on:
       db:
         condition: service_healthy

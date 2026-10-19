@@ -6,11 +6,14 @@ Thanks for your interest in contributing! This document describes how to work on
 
 ```bash
 npm install
-cp .env.example .env   # fill in your values
+cp .env.example .env
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db
+# Set DATABASE_URL=postgresql://postgres:postgres@localhost:5432/discord_helm
+# and fill in the other required values in .env.
 npm run dev
 ```
 
-Requires Node.js >= 22 and an OpenAI-compatible LLM endpoint. See the [README](./README.md) for environment variables.
+Requires Node.js >= 22, Docker with the Compose plugin, and an OpenAI-compatible LLM endpoint. See the [README](./README.md) for environment variables.
 
 ## Pull Requests
 
@@ -28,6 +31,12 @@ Requires Node.js >= 22 and an OpenAI-compatible LLM endpoint. See the [README](.
 
 - Add or update tests (`node:test`, under `test/*.test.ts`) when changing behavior
 - Direct pushes to `main` are blocked; all changes go through PRs
+
+## Releases
+
+Publish a GitHub Release with a semantic version tag such as `v0.2.0`. The release workflow builds `linux/amd64` and `linux/arm64` images, pushes them to GHCR, and attaches the Compose setup bundles to the release.
+
+After the first publish, set the `ghcr.io/ritzowo/discord-helm` package visibility to **Public** in its GitHub package settings so self-hosters can pull it without authentication. This is a one-time repository-owner action.
 
 ## Commit Messages
 
